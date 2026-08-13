@@ -1,0 +1,8 @@
+# ─────────────────────────────────────────────────────────────
+# EMBER · WebAssembly edge runtime for the component model
+# SPDX-License-Identifier: MIT
+# ─────────────────────────────────────────────────────────────
+[toolchain]
+channel = "1.90"
+components = ["clippy", "rustfmt"]
+profile = "minimal"

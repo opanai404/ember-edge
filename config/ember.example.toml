@@ -1,0 +1,58 @@
+# ─────────────────────────────────────────────────────────────
+# EMBER · WebAssembly edge runtime for the component model
+# SPDX-License-Identifier: MIT
+# ─────────────────────────────────────────────────────────────
+# Reference configuration for a local, single-node Ember deployment.
+# Copy to a live location (e.g. /etc/ember/ember.toml) and adjust.
+
+bind = "0.0.0.0:8080"
+
+[engine]
+# Hard ceiling shared by the pooled allocator. Per-tenant limits are clamped
+# to these values at startup.
+max_memory_bytes = "1024m"
+max_instances = 64
+threads = 4
+epoch_interval_ms = 100
+
+[registry]
+endpoint = "ghcr.io"
+insecure = false
+pull_interval_secs = 30
+cache_dir = "registry-cache"
+
+[http]
+timeout_secs = 30
+concurrency = 512
+max_body_bytes = "8m"
+request_id_header = "x-request-id"
+
+# Tenants are matched from the URL path: GET /<name>/... routes to the
+# component pinned for tenant `name`.
+[[tenants]]
+name = "echo"
+
+[tenants.component]
+kind = "oci"
+reference = "ghcr.io/hrniu/ember/echo:latest"
+# Pin to a content digest for reproducible deploys; omit to track :tag.
+pin = "sha256:9f1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5"
+
+[tenants.limits]
+max_memory_bytes = "256m"
+max_instances = 8
+max_wall_duration_ms = 10_000
+max_body_bytes = "1m"
+memfs_quota_bytes = "4m"
+egress_allow = ["https://api.example.com", "https://*.static.example.net"]
+
+[[tenants]]
+name = "static"
+
+[tenants.component]
+kind = "file"
+path = "components/static.wasm"
+
+[tenants.limits]
+max_memory_bytes = "64m"
+egress_allow = []

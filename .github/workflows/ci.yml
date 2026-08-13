@@ -1,0 +1,82 @@
+# ─────────────────────────────────────────────────────────────
+# EMBER · WebAssembly edge runtime for the component model
+# SPDX-License-Identifier: MIT
+# ─────────────────────────────────────────────────────────────
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+
+jobs:
+  lint:
+    name: lint (fmt + clippy)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-14, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: .
+      - name: Install wasm-tools
+        uses: taiki-e/install-action@v2
+        with:
+          tools: wasm-tools
+      - name: Check formatting
+        run: cargo fmt -- --check
+      - name: Lint (clippy, deny warnings)
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Validate WIT contract
+        run: wasm-tools component wit wit/ >/dev/null
+        shell: bash
+
+  test:
+    name: test
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-14, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Run unit + integration tests
+        run: cargo test --all-features
+      - name: Run benchmarks (smoke)
+        run: cargo bench -- --test
+        if: runner.os == 'Linux'
+
+  typecheck:
+    name: typecheck (check + doc)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: cargo check (all targets)
+        run: cargo check --all-targets --all-features
+      - name: cargo doc (no deps)
+        run: cargo doc --no-deps --all-features
+      - name: doctests
+        run: cargo test --doc
+
+  deny:
+    name: cargo-deny (licenses)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2

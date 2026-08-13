@@ -1,0 +1,17 @@
+# ─────────────────────────────────────────────────────────────
+# EMBER · WebAssembly edge runtime for the component model
+# SPDX-License-Identifier: MIT
+# ─────────────────────────────────────────────────────────────
+
+target/
+.git/
+.github/
+data/
+registry-cache/
+.cache/
+*.log
+.env
+docs/
+README.md
+Makefile
+Cargo.lock

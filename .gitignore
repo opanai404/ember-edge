@@ -1,0 +1,34 @@
+# ─────────────────────────────────────────────────────────────
+# EMBER · WebAssembly edge runtime for the component model
+# SPDX-License-Identifier: MIT
+# ─────────────────────────────────────────────────────────────
+
+# ── Rust / Cargo ─────────────────────────────────────────────
+/target
+**/*.rs.bk
+# Lockfile regenerated on first build; kept out of the tree until the
+# first CI run pins it.
+/Cargo.lock
+
+# ── Runtime state (never committed) ──────────────────────────
+/data/
+/tmp/
+*.db
+*.sqlite
+*.sqlite3
+
+# ── OCI / module cache ───────────────────────────────────────
+.cache/
+/registry-cache/
+
+# ── Logs & secrets ───────────────────────────────────────────
+*.log
+.env
+.env.local
+
+# ── Editors & OS cruft ───────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,97 @@
+// ─────────────────────────────────────────────────────────────
+// EMBER · WebAssembly edge runtime for the component model
+// SPDX-License-Identifier: MIT
+// ─────────────────────────────────────────────────────────────
+
+package ember:runtime;
+
+/// Diagnostic severity emitted by a guest component.
+enum log-level {
+    debug,
+    info,
+    warn,
+    error,
+}
+
+/// Error surfaced by the host-provided scratch storage.
+enum scratch-error {
+    not-found,
+    quota-exceeded,
+    invalid-path,
+}
+
+/// A single request normalized for component dispatch. Headers are preserved
+/// as a list of key/value pairs; multi-valued headers appear more than once.
+record request {
+    method: string,
+    path: string,
+    query: string,
+    headers: list<tuple<string, string>>,
+    body: option<list<u8>>,
+}
+
+/// A response produced by a component's handler.
+record response {
+    status: u16,
+    headers: list<tuple<string, string>>,
+    body: list<u8>,
+}
+
+/// Host capability: tenant identity and configuration.
+///
+/// `get-config` returns the tenant-scoped configuration value for `key`, or
+/// `none` when the tenant has not been provisioned with that key.
+interface tenant {
+    /// The tenant id this instance is running under.
+    tenant-id: func() -> string;
+
+    /// Read a tenant-scoped configuration value.
+    get-config: func(key: string) -> option<string>;
+
+    /// Append `data` to the tenant scratch file at `path`, against a
+    /// per-tenant byte quota enforced by the host.
+    scratch-write: func(path: string, data: list<u8>) -> result<_, scratch-error>;
+
+    /// Read the tenant scratch file at `path`, or `none` if absent.
+    scratch-read: func(path: string) -> option<list<u8>>;
+
+    /// Total bytes currently held in the tenant scratch filesystem.
+    scratch-bytes: func() -> u64;
+}
+
+/// Host capability: structured logging routed into the runtime's `tracing`
+/// pipeline. `emit` is best-effort and never fails the request.
+interface telemetry {
+    emit: func(level: log-level, message: string);
+}
+
+/// The guest entrypoint: every Ember component exports this interface.
+interface handler {
+    /// Dispatch one request and return one response. The runtime enforces the
+    /// tenant's wall-clock and epoch budgets around the call and surfaces
+    /// violations to the caller as HTTP 429/500.
+    handle: func(req: request) -> response;
+}
+
+/// Contract a component must satisfy to be scheduled by Ember.
+///
+/// A component built against this world exports `ember-handler` and imports
+/// the `ember:runtime` host capabilities plus the WASI preview 2 subset the
+/// sandbox exposes. See `docs/component-contract.md` for the full surface.
+world ember-guest {
+    export handler;
+
+    import tenant;
+    import telemetry;
+
+    // WASI preview 2 imports the sandbox satisfies.
+    import wasi:io/error@0.2.0;
+    import wasi:io/streams@0.2.0;
+    import wasi:clocks/monotonic-clock@0.2.0;
+    import wasi:clocks/wall-clock@0.2.0;
+    import wasi:filesystem/types@0.2.0;
+    import wasi:filesystem/preopens@0.2.0;
+    import wasi:random/random@0.2.0;
+    import wasi:http/types@0.2.0;
+    import wasi:http/outgoing-handler@0.2.0;
+}
