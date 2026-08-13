@@ -1,0 +1,16 @@
+<svg width="720" height="160" viewBox="0 0 720 160" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ember">
+  <defs>
+    <linearGradient id="g" x1="40" y1="30" x2="120" y2="130" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBBF24"/><stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+  </defs>
+  <rect x="40" y="40" width="80" height="80" rx="22" fill="#101828" stroke="url(#g)" stroke-width="2"/>
+  <g>
+    <rect x="58" y="52" width="44" height="14" rx="4" fill="#FBBF24" fill-opacity="0.35"/>
+    <rect x="58" y="72" width="44" height="14" rx="4" fill="#FBBF24" fill-opacity="0.65"/>
+    <rect x="58" y="92" width="44" height="14" rx="4" fill="#FBBF24"/>
+    <rect x="86" y="92" width="8" height="8" rx="2" fill="#FDE68A"/>
+  </g>
+  <text x="150" y="88" fill="#F8FAFC" font-family="Inter, -apple-system, 'Segoe UI', sans-serif" font-size="44" font-weight="760" letter-spacing="2">EMBER</text>
+  <text x="152" y="118" fill="#8B93A7" font-family="Inter, -apple-system, 'Segoe UI', sans-serif" font-size="16">WebAssembly edge runtime</text>
+</svg>

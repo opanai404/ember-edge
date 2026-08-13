@@ -3,13 +3,7 @@
   SPDX-License-Identifier: MIT
 -->
 
-```text
-// EMBER · accent: ember amber #FBBF24
- ██████████████████████████████
- █  ▄▀▄  █▀▄  █▀█  ▄▀▄  █▄▀  █▓
- █  █▀█  █▀▄  █▄█  █▀█  █ █  █▓
- ██████████████████████████████
-```
+<p align="center"><img src="assets/logo.svg" width="520" alt="Ember logo"></p>
 
 WebAssembly edge runtime for the component model
 
