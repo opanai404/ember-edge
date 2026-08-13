@@ -8,7 +8,7 @@
 //! digest transition the way the runtime's reload loop would decide one.
 //!
 //! ```sh
-//! cargo run --example pull_and_reload -- ghcr.io/hrniu/ember/echo:latest
+//! cargo run --example pull_and_reload -- ghcr.io/opanai404/ember/echo:latest
 //! ```
 
 use std::time::Duration;
@@ -19,7 +19,7 @@ use ember::registry::{HotReloadPolicy, OciClientConfig, Registry};
 async fn main() -> ember::Result<()> {
     let reference = std::env::args()
         .nth(1)
-        .unwrap_or_else(|| "ghcr.io/hrniu/ember/echo:latest".to_string());
+        .unwrap_or_else(|| "ghcr.io/opanai404/ember/echo:latest".to_string());
 
     let registry = Registry::new(OciClientConfig::default(), HotReloadPolicy::default())?;
 

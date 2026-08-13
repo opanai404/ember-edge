@@ -45,4 +45,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `examples/pull_and_reload.rs` — OCI pull plus digest-driven hot reload.
 - `examples/tenants.rs` — multi-tenant sandbox isolation walkthrough.
 
-[0.1.0]: https://github.com/hrniu/ember-edge/releases/tag/v0.1.0
+[0.1.0]: https://github.com/opanai404/ember-edge/releases/tag/v0.1.0

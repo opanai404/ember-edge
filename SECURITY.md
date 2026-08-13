@@ -14,7 +14,7 @@ severity.
 **Do not open a public GitHub issue.** Report privately so we can fix and
 release before the details become public.
 
-- Primary channel: [GitHub security advisory](https://github.com/hrniu/ember-edge/security/advisories/new)
+- Primary channel: [GitHub security advisory](https://github.com/opanai404/ember-edge/security/advisories/new)
   against this repository.
 - Alternate channel: security@hrniu.dev (monitored continuously).
 

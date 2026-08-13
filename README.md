@@ -13,12 +13,12 @@
 
 WebAssembly edge runtime for the component model
 
-[![CI](https://img.shields.io/github/actions/workflow/status/hrniu/ember-edge/ci.yml?branch=main&style=flat&logo=github&logoColor=white)](https://github.com/hrniu/ember-edge/actions/workflows/ci.yml)
-[![License](https://img.shields.io/github/license/hrniu/ember-edge?style=flat&color=FBBF24)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/opanai404/ember-edge/ci.yml?branch=main&style=flat&logo=github&logoColor=white)](https://github.com/opanai404/ember-edge/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/opanai404/ember-edge?style=flat&color=FBBF24)](LICENSE)
 [![Crates.io](https://img.shields.io/crates/v/ember-edge?style=flat&logo=rust&logoColor=white)](https://crates.io/crates/ember-edge)
-[![Stars](https://img.shields.io/github/stars/hrniu/ember-edge?style=flat&logo=github&logoColor=white)](https://github.com/hrniu/ember-edge)
+[![Stars](https://img.shields.io/github/stars/opanai404/ember-edge?style=flat&logo=github&logoColor=white)](https://github.com/opanai404/ember-edge)
 [![Language](https://img.shields.io/badge/language-Rust-E6E8EF?style=flat&logo=rust&logoColor=white)](https://www.rust-lang.org/)
-[![Rust](https://img.shields.io/badge/rust-1.90+-FBBF24?style=flat&logo=rust&logoColor=white)](https://github.com/hrniu/ember-edge/blob/main/rust-toolchain.toml)
+[![Rust](https://img.shields.io/badge/rust-1.90+-FBBF24?style=flat&logo=rust&logoColor=white)](https://github.com/opanai404/ember-edge/blob/main/rust-toolchain.toml)
 [![Wasmtime](https://img.shields.io/badge/wasmtime-34-8B93A7?style=flat)](https://github.com/bytecodealliance/wasmtime)
 [![WASI](https://img.shields.io/badge/WASI-preview%202-FBBF24?style=flat)](https://wasi.dev/)
 [![Component Model](https://img.shields.io/badge/component--model-v1-8B93A7?style=flat)](https://component-model.bytecodealliance.org/)
@@ -137,8 +137,11 @@ latency experiment.
 | Egress allowlist, 10 rules (hit) | ~90 ns | wildcard + scheme matching |
 | Egress allowlist, deny | ~60 ns | no rules match, deny-by-default |
 | Request ABI setup (contract + digest) | ~1.5 µs | per-request fixed cost |
-| Warm dispatch (prepared instance) | ~4 µs | instance reuse, no instantiation |
-| Cold dispatch (new digest) | ~1.1 ms | instantiate + first call |
+| Warm dispatch (prepared instance)* | ~4 µs | instance reuse, no instantiation |
+| Cold dispatch (new digest)* | ~1.1 ms | instantiate + first call |
+
+\* Illustrative figures only — these rows have no corresponding benchmark in
+`benches/invoke.rs` and are not measured by `cargo bench`.
 
 ## Project layout
 
@@ -200,6 +203,6 @@ falls under the [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
 ## License
 
-MIT — © 2026 [hrniu](https://github.com/hrniu). See [`LICENSE`](LICENSE).
+MIT — © 2026 [hrniu](https://github.com/opanai404). See [`LICENSE`](LICENSE).
 
 [component-model]: https://component-model.bytecodealliance.org/

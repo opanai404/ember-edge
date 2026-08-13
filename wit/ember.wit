@@ -25,7 +25,7 @@ enum scratch-error {
 record request {
     method: string,
     path: string,
-    query: string,
+    query: option<string>,
     headers: list<tuple<string, string>>,
     body: option<list<u8>>,
 }

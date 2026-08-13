@@ -122,7 +122,7 @@ impl SandboxLimits {
 mod serde_millis {
     use std::time::Duration;
 
-    use serde::{Deserialize, Deserializer, Serializer};
+    use serde::{Deserialize, Deserializer};
 
     pub fn deserialize<'de, D>(d: D) -> std::result::Result<Duration, D::Error>
     where
@@ -130,13 +130,6 @@ mod serde_millis {
     {
         let ms = u64::deserialize(d)?;
         Ok(Duration::from_millis(ms))
-    }
-
-    pub fn serialize<S>(d: &Duration, s: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        s.serialize_u64(d.as_millis() as u64)
     }
 }
 

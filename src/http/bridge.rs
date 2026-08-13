@@ -70,9 +70,17 @@ impl EgressPolicy {
 /// - `*.example.com`            → any host under `example.com` (incl. bare)
 /// - `localhost:8080`           → port-restricted
 fn pattern_matches(rule: &str, authority: &str) -> bool {
-    // Split an optional `scheme://` prefix off both sides.
-    let rule = strip_scheme(rule);
-    let target = strip_scheme(authority);
+    // Split an optional `scheme://` prefix off both sides, then compare the
+    // schemes before discarding them so a scheme-qualified rule can never
+    // silently match a different scheme.
+    let (rule_scheme, rule) = split_scheme(rule);
+    let (target_scheme, target) = split_scheme(authority);
+
+    if let (Some(rs), Some(ts)) = (rule_scheme, target_scheme) {
+        if !rs.eq_ignore_ascii_case(ts) {
+            return false;
+        }
+    }
 
     let (rule_host, rule_port) = split_authority(rule);
     let (target_host, target_port) = split_authority(target);
@@ -85,11 +93,11 @@ fn pattern_matches(rule: &str, authority: &str) -> bool {
     host_matches(rule_host, target_host)
 }
 
-/// Strip `scheme://` if present.
-fn strip_scheme(s: &str) -> &str {
+/// Split `scheme://` off if present, returning the scheme and the remainder.
+fn split_scheme(s: &str) -> (Option<&str>, &str) {
     match s.find("://") {
-        Some(idx) => &s[idx + 3..],
-        None => s,
+        Some(idx) => (Some(&s[..idx]), &s[idx + 3..]),
+        None => (None, s),
     }
 }
 

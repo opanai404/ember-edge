@@ -68,7 +68,7 @@ name = "echo"
 
 [tenants.component]
 kind = "oci"                       # or "file"
-reference = "ghcr.io/hrniu/ember/echo:latest"
+reference = "ghcr.io/opanai404/ember/echo:latest"
 pin = "sha256:..."                 # optional, reproducible deploys
 
 [tenants.limits]
@@ -96,7 +96,7 @@ silently reduced rather than crashing the runtime.
    wasm-tools component new guest/target/wasm32-wasip2/release/echo.wasm \
      -o echo-component.wasm
    # push with crane or your registry client, e.g.
-   crane push echo-component.wasm ghcr.io/hrniu/ember/echo:latest
+   crane push echo-component.wasm ghcr.io/opanai404/ember/echo:latest
    ```
 3. Point a tenant at the reference, optionally pin the digest, and reload is
    automatic: republish the tag and Ember picks up the new digest within
