@@ -13,6 +13,7 @@
 
 WebAssembly edge runtime for the component model
 
+[![Live demo](https://img.shields.io/badge/live_demo-edge_runtime-FBBF24?style=flat&logoColor=white)](https://opanai404.github.io/ember-edge/)
 [![License](https://img.shields.io/github/license/opanai404/ember-edge?style=flat&color=FBBF24)](LICENSE)
 [![Crates.io](https://img.shields.io/crates/v/ember-edge?style=flat&logo=rust&logoColor=white)](https://crates.io/crates/ember-edge)
 [![Language](https://img.shields.io/badge/language-Rust-E6E8EF?style=flat&logo=rust&logoColor=white)](https://www.rust-lang.org/)

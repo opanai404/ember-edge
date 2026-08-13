@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ember — WebAssembly edge runtime</title>
+<style>
+  :root { color-scheme: dark; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:100%; height:100%; overflow:hidden; background:#05070d; }
+  body { font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace; color:#c8cfdc; }
+  #app { max-width:920px; margin:0 auto; padding:40px 28px; height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+  header { text-align:center; margin-bottom:28px; }
+  h1 { font-size:20px; font-weight:700; letter-spacing:.35em; color:#fbbf24; text-transform:uppercase; text-shadow:0 0 20px rgba(251,191,36,.5); }
+  .sub { font-size:12px; color:#7d8698; letter-spacing:.06em; margin-top:8px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; }
+  .panel { background:rgba(16,24,40,.55); border:1px solid rgba(251,191,36,.15); border-radius:16px; padding:18px; }
+  .panel h3 { font-size:10px; letter-spacing:.2em; color:#9aa3b5; text-transform:uppercase; margin-bottom:12px; }
+  .mod { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid rgba(251,191,36,.08); }
+  .mod .nm { font-size:13px; color:#e8ebf2; font-weight:600; }
+  .mod .meta { font-size:11px; color:#7d8698; }
+  .mod .status { font-size:11px; }
+  .status.ready { color:#34d399; }
+  .status.pending { color:#fbbf24; }
+  .status.deploying { color:#a78bfa; }
+  .btn { font:inherit; font-size:12px; font-weight:700; letter-spacing:.04em; border:none; border-radius:9px; padding:8px 14px; cursor:pointer; }
+  .btn.deploy { background:rgba(251,191,36,.15); color:#fbbf24; }
+  .btn.invoke { background:#fbbf24; color:#05070d; }
+  .btn.invoke:disabled { background:rgba(251,191,36,.1); color:#5b6478; cursor:default; }
+  .flow { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  .fstep { flex:1; text-align:center; font-size:11px; color:#7d8698; padding:8px 4px; border:1px solid rgba(251,191,36,.12); border-radius:9px; transition:all .3s; }
+  .fstep.on { color:#fbbf24; border-color:#fbbf24; box-shadow:0 0 14px rgba(251,191,36,.25); }
+  .fstep.done { color:#a7f3d0; border-color:rgba(52,211,153,.4); }
+  .farrow { color:#fbbf24; }
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  .stat { background:rgba(16,24,40,.55); border:1px solid rgba(251,191,36,.15); border-radius:14px; padding:13px; text-align:center; }
+  .stat .k { font-size:10px; letter-spacing:.16em; color:#7d8698; text-transform:uppercase; }
+  .stat .v { font-size:19px; font-weight:700; color:#fbbf24; margin-top:5px; }
+  .badge { position:fixed; right:22px; bottom:16px; font-size:11px; color:#fbbf24; text-decoration:none; border:1px solid rgba(251,191,36,.35); border-radius:20px; padding:6px 14px; letter-spacing:.05em; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>Ember</h1><div class="sub">WebAssembly edge runtime · WASI preview 2 · component model · OCI</div></header>
+
+  <div class="grid">
+    <div class="panel">
+      <h3>module registry · OCI</h3>
+      <div id="mods"></div>
+    </div>
+    <div class="panel">
+      <h3>deploy pipeline</h3>
+      <div class="flow">
+        <div class="fstep" id="f0">pull</div><div class="farrow">→</div>
+        <div class="fstep" id="f1">compile</div><div class="farrow">→</div>
+        <div class="fstep" id="f2">instantiate</div><div class="farrow">→</div>
+        <div class="fstep" id="f3">serve</div>
+      </div>
+      <div style="font-size:11px;color:#7d8698;margin-top:14px;line-height:1.9">
+        <div>per-tenant sandbox: <b style="color:#34d399">isolated</b></div>
+        <div>component imports/exports: <b style="color:#fbbf24">bound</b></div>
+        <div>hot reload from registry: <b style="color:#a78bfa">armed</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="k">modules</div><div class="v" id="sMods">0</div></div>
+    <div class="stat"><div class="k">cold start</div><div class="v" id="sCold">—</div></div>
+    <div class="stat"><div class="k">warm invoke</div><div class="v" id="sWarm">—</div></div>
+    <div class="stat"><div class="k">requests</div><div class="v" id="sReq">0</div></div>
+  </div>
+</div>
+<a class="badge" href="https://github.com/opanai404/ember-edge">view source →</a>
+
+<script>
+const modules=[
+  {name:'echo', size:'14 KB', cold:'1.1 ms', warm:'3.8 µs'},
+  {name:'json-parse', size:'38 KB', cold:'1.6 ms', warm:'6.2 µs'},
+  {name:'image-resize', size:'212 KB', cold:'3.4 ms', warm:'12.4 µs'},
+  {name:'auth-middleware', size:'27 KB', cold:'1.3 ms', warm:'4.1 µs'},
+];
+let deployed=new Set(), req=0;
+const modsEl=document.getElementById('mods');
+function renderMods(){
+  modsEl.innerHTML='';
+  modules.forEach(m=>{
+    const st=deployed.has(m.name)?'ready':'pending';
+    const row=document.createElement('div'); row.className='mod';
+    row.innerHTML=`<div><div class="nm">${m.name}</div><div class="meta">${m.size} · wasm32-wasi</div></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="status ${st}">${st}</span>
+        <button class="btn deploy" data-m="${m.name}">deploy</button>
+        <button class="btn invoke" data-m="${m.name}" ${deployed.has(m.name)?'':'disabled'}>invoke</button>
+      </div>`;
+    modsEl.appendChild(row);
+  });
+  document.getElementById('sMods').textContent=deployed.size;
+}
+function deployFlow(name, done){
+  const steps=['f0','f1','f2','f3'];
+  steps.forEach((s,i)=>{ const el=document.getElementById(s); el.className='fstep'; });
+  steps.forEach((s,i)=>{ setTimeout(()=>{ document.getElementById(s).className='fstep on'; }, i*350); });
+  setTimeout(()=>{ steps.forEach(s=>document.getElementById(s).className='fstep done'); done(); }, steps.length*350+200);
+}
+modsEl.addEventListener('click',e=>{
+  const btn=e.target.closest('button'); if(!btn) return;
+  const name=btn.dataset.m, m=modules.find(x=>x.name===name);
+  if(btn.classList.contains('deploy')){
+    btn.disabled=true; btn.textContent='…';
+    deployFlow(name, ()=>{ deployed.add(name); btn.disabled=false; btn.textContent='deploy'; renderMods();
+      document.getElementById('sCold').textContent=m.cold; });
+  } else if(btn.classList.contains('invoke')){
+    req++; document.getElementById('sReq').textContent=req;
+    document.getElementById('sWarm').textContent=m.warm;
+  }
+});
+renderMods();
+</script>
+</body>
+</html>
