@@ -3,7 +3,15 @@
   SPDX-License-Identifier: MIT
 -->
 
-<p align="center"><img src="assets/logo.svg" width="520" alt="Ember logo"></p>
+<p align="center"><img src="assets/logo.svg" width="520" alt="Ember logo">
+
+<p align="center">
+  <a href="https://opanai404.github.io/ember-edge/"><img src="https://img.shields.io/badge/▶_try_the_live_demo-FBBF24?style=for-the-badge&logoColor=white" alt="Try the live demo"></a>
+</p>
+
+<p align="center">
+  <a href="https://opanai404.github.io/ember-edge/"><img src="assets/og.png" width="720" alt="ember-edge demo preview"></a>
+</p></p>
 
 WebAssembly edge runtime for the component model
 
