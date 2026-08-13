@@ -13,10 +13,8 @@
 
 WebAssembly edge runtime for the component model
 
-[![CI](https://img.shields.io/github/actions/workflow/status/opanai404/ember-edge/ci.yml?branch=main&style=flat&logo=github&logoColor=white)](https://github.com/opanai404/ember-edge/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/opanai404/ember-edge?style=flat&color=FBBF24)](LICENSE)
 [![Crates.io](https://img.shields.io/crates/v/ember-edge?style=flat&logo=rust&logoColor=white)](https://crates.io/crates/ember-edge)
-[![Stars](https://img.shields.io/github/stars/opanai404/ember-edge?style=flat&logo=github&logoColor=white)](https://github.com/opanai404/ember-edge)
 [![Language](https://img.shields.io/badge/language-Rust-E6E8EF?style=flat&logo=rust&logoColor=white)](https://www.rust-lang.org/)
 [![Rust](https://img.shields.io/badge/rust-1.90+-FBBF24?style=flat&logo=rust&logoColor=white)](https://github.com/opanai404/ember-edge/blob/main/rust-toolchain.toml)
 [![Wasmtime](https://img.shields.io/badge/wasmtime-34-8B93A7?style=flat)](https://github.com/bytecodealliance/wasmtime)
